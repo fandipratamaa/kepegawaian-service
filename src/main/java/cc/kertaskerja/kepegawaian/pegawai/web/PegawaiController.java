@@ -24,12 +24,8 @@ import cc.kertaskerja.kepegawaian.pegawai.domain.MigrationSummary;
 import cc.kertaskerja.kepegawaian.pegawai.domain.PegawaiService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -45,11 +41,10 @@ public class PegawaiController {
     }
 
     @GetMapping
-    @Operation(summary = "Daftar Pegawai By Filter", description = "Mengambil seluruh data pegawai by opd id atau nama role", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Daftar Pegawai By Filter", description = "Mengambil seluruh data pegawai by opd id atau nama role")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Daftar Pegawai berhasil diambil", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PegawaiResponse.class)))),
+            @ApiResponse(responseCode = "200", description = "Daftar Pegawai berhasil diambil"),
             @ApiResponse(responseCode = "400", description = "Bad Request, filter tidak valid"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
     })
     public WebResponse<List<PegawaiResponse>> findAll(
             @Parameter(description = "Opd Id", example = "1", required = true) @RequestParam Long opdId,
@@ -63,10 +58,9 @@ public class PegawaiController {
     }
 
     @GetMapping("/all")
-    @Operation(summary = "All Pegawai", description = "Mengambil seluruh data pegawai", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "All Pegawai", description = "Mengambil seluruh data pegawai")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Daftar Pegawai berhasil diambil", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PegawaiResponse.class)))),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
+            @ApiResponse(responseCode = "200", description = "Daftar Pegawai berhasil diambil"),
     })
     public WebResponse<PageResponse<PegawaiResponse>> allPegawais(
             @ParameterObject @PageableDefault(size = 20, sort = "namaPegawai", direction = Sort.Direction.ASC) Pageable pageable
@@ -79,11 +73,10 @@ public class PegawaiController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Find pegawai by ID", description = "Mengembalikan data pegawai berdasarkan ID.", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Find pegawai by ID", description = "Mengembalikan data pegawai berdasarkan ID.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Pegawai berhasil ditemukan", content = @Content(schema = @Schema(implementation = PegawaiResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Pegawai berhasil ditemukan"),
             @ApiResponse(responseCode = "400", description = "ID pegawai tidak valid"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
             @ApiResponse(responseCode = "404", description = "Pegawai tidak ditemukan")
     })
     public WebResponse<PegawaiResponse> findById(
@@ -93,10 +86,9 @@ public class PegawaiController {
     }
 
     @GetMapping("/histori/{pegawaiId}")
-    @Operation(summary = "Histori lengkap pegawai", description = "Menampilkan data histori pegawai", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Histori lengkap pegawai", description = "Menampilkan data histori pegawai")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Data Histori pegawai berhasil diambil", content = @Content(schema = @Schema(implementation = PegawaiHistoriResponse.class))),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
+            @ApiResponse(responseCode = "200", description = "Data Histori pegawai berhasil diambil"),
             @ApiResponse(responseCode = "404", description = "Pegawai tidak ditemukan"),
     })
     public WebResponse<PegawaiHistoriResponse> findHistoriPegawai(
@@ -110,11 +102,10 @@ public class PegawaiController {
     }
 
     @PostMapping
-    @Operation(summary = "Tambah data pegawai", description = "Menambahkan data pegawai baru", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Tambah data pegawai", description = "Menambahkan data pegawai baru")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Pegawai berhasil ditambahkan"),
             @ApiResponse(responseCode = "400", description = "Data tidak valid"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
             @ApiResponse(responseCode = "409", description = "Pegawai sudah ada")
     })
     public WebResponse<PegawaiResponse> create(
@@ -128,11 +119,10 @@ public class PegawaiController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update data pegawai", description = "Update nama atau id pegawai", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Update data pegawai", description = "Update nama atau id pegawai")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Data pegawai berhasil diperbarui"),
             @ApiResponse(responseCode = "400", description = "Data tidak valid"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
             @ApiResponse(responseCode = "404", description = "Data pegawai tidak ditemukan")
     })
     public WebResponse<PegawaiResponse> update(
@@ -147,10 +137,9 @@ public class PegawaiController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Hapus data pegawai", description = "hapus data pegawai by id", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Hapus data pegawai", description = "hapus data pegawai by id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Data pegawai berhasil diperbarui"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
             @ApiResponse(responseCode = "404", description = "Data pegawai tidak ditemukan")
     })
     public WebResponse<Void> delete(
@@ -162,11 +151,10 @@ public class PegawaiController {
     }
 
     @PostMapping("/migrate")
-    @Operation(summary = "Migrasi data pegawai", description = "Migrasi existing pegawai ke identity service", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Migrasi data pegawai", description = "Migrasi existing pegawai ke identity service")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Migrasi Pegawai berhasil"),
             @ApiResponse(responseCode = "400", description = "Data tidak valid"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
             @ApiResponse(responseCode = "409", description = "Pegawai sudah ada")
     })
     public WebResponse<MigrationSummary> migrate(
@@ -177,11 +165,10 @@ public class PegawaiController {
     }
 
     @GetMapping("/findByNip")
-    @Operation(summary = "Find pegawai by NIP", description = "Mengembalikan data pegawai berdasarkan NIP.", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Find pegawai by NIP", description = "Mengembalikan data pegawai berdasarkan NIP.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Pegawai berhasil ditemukan", content = @Content(schema = @Schema(implementation = PegawaiDetailResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Pegawai berhasil ditemukan"),
             @ApiResponse(responseCode = "400", description = "Parameter NIP tidak valid"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
             @ApiResponse(responseCode = "404", description = "Pegawai tidak ditemukan")
     })
     public WebResponse<PegawaiDetailResponse> findByNip(
@@ -199,10 +186,9 @@ public class PegawaiController {
     }
 
     @GetMapping("/users")
-    @Operation(summary = "Daftar User / Pegawai", description = "Mengambil seluruh data user dan role", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Daftar User / Pegawai", description = "Mengambil seluruh data user dan role")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Daftar User berhasil diambil", content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class)))),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
+            @ApiResponse(responseCode = "200", description = "Daftar User berhasil diambil"),
     })
     public WebResponse<List<UserResponse>> findAllUser() {
         List<UserResponse> responses = pegawaiService.findAllWithUserId()

@@ -34,10 +34,6 @@ public class RolePegawaiController {
                     description = "request body tidak invalid"
             ),
             @ApiResponse(
-                    responseCode = "401",
-                    description = "invalid auth"
-            ),
-            @ApiResponse(
                     responseCode = "404",
                     description = "Pegawai / role / tidak ditemukan"
             )

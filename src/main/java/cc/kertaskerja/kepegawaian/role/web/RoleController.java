@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.List;
@@ -17,7 +15,6 @@ import java.util.List;
 import cc.kertaskerja.kepegawaian.common.web.WebResponse;
 import cc.kertaskerja.kepegawaian.role.domain.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,12 +41,7 @@ public class RoleController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Daftar Role berhasil diambil",
-            content = @Content(
-                array = @ArraySchema(
-                    schema = @Schema(implementation = RoleResponse.class)
-                )
-            )
+            description = "Daftar Role berhasil diambil"
         )
     })
     public WebResponse<List<RoleResponse>> findAll() {
@@ -69,10 +61,7 @@ public class RoleController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Role ditemukan",
-            content = @Content(
-                schema = @Schema(implementation = RoleResponse.class)
-            )
+            description = "Role ditemukan"
         ),
         @ApiResponse(responseCode = "400", description = "ID role tidak valid"),
         @ApiResponse(responseCode = "404", description = "Role tidak ditemukan")

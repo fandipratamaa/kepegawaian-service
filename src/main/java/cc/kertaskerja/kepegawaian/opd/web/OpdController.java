@@ -25,12 +25,8 @@ import cc.kertaskerja.kepegawaian.opd.domain.Opd;
 import cc.kertaskerja.kepegawaian.opd.domain.OpdService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -46,10 +42,9 @@ public class OpdController {
     }
 
     @GetMapping("/all")
-    @Operation(summary = "Daftar OPD aktif", description = "Mengambil seluruh OPD aktif berdasarkan kode lembaga yang dikonfigurasi.", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Daftar OPD aktif", description = "Mengambil seluruh OPD aktif berdasarkan kode lembaga yang dikonfigurasi.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Daftar OPD berhasil diambil", content = @Content(array = @ArraySchema(schema = @Schema(implementation = OpdResponse.class)))),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
+            @ApiResponse(responseCode = "200", description = "Daftar OPD berhasil diambil"),
     })
     public WebResponse<PageResponse<OpdResponse>> findAll(
             @ParameterObject @PageableDefault(size = 20, sort = "namaOpd", direction = Sort.Direction.ASC) Pageable pageable) {
@@ -60,10 +55,9 @@ public class OpdController {
     }
 
     @GetMapping("/options")
-    @Operation(summary = "Daftar OPD untuk dropdown", description = "Simplifikasi Data OPD untuk dropdown", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Daftar OPD untuk dropdown", description = "Simplifikasi Data OPD untuk dropdown")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Daftar OPD berhasil diambil", content = @Content(array = @ArraySchema(schema = @Schema(implementation = OptionResponse.class)))),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
+            @ApiResponse(responseCode = "200", description = "Daftar OPD berhasil diambil"),
     })
     public WebResponse<List<OptionResponse>> dropdownAll() {
         List<OptionResponse> responses = opdService.findAllOpdAktifInLembaga()
@@ -79,10 +73,9 @@ public class OpdController {
     }
 
     @GetMapping("/show/{id}")
-    @Operation(summary = "Detail OPD", description = "Mengambil detail OPD berdasarkan id OPD.", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Detail OPD", description = "Mengambil detail OPD berdasarkan id OPD.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Detail OPD berhasil ditemukan", content = @Content(schema = @Schema(implementation = Opd.class))),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
+            @ApiResponse(responseCode = "200", description = "Detail OPD berhasil ditemukan"),
             @ApiResponse(responseCode = "404", description = "OPD tidak ditemukan")
     })
     public WebResponse<OpdResponse> show(
@@ -92,11 +85,10 @@ public class OpdController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Membuat OPD", description = "Membuat data OPD baru.", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Membuat OPD", description = "Membuat data OPD baru.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "OPD berhasil dibuat"),
             @ApiResponse(responseCode = "400", description = "Data tidak valid"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
             @ApiResponse(responseCode = "409", description = "Kode OPD sudah terdaftar")
     })
     public WebResponse<Opd> create(
@@ -106,11 +98,10 @@ public class OpdController {
     }
 
     @PutMapping("/update/{id}")
-    @Operation(summary = "Memperbarui OPD", description = "Memperbarui data OPD berdasarkan id OPD.", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Memperbarui OPD", description = "Memperbarui data OPD berdasarkan id OPD.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OPD berhasil diperbarui"),
             @ApiResponse(responseCode = "400", description = "Data tidak valid"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
     })
     public WebResponse<Opd> update(
             @PathVariable Long id,
@@ -121,10 +112,9 @@ public class OpdController {
 
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Menghapus OPD", description = "Menghapus data OPD berdasarkan id OPD.", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Menghapus OPD", description = "Menghapus data OPD berdasarkan id OPD.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OPD berhasil dihapus"),
-            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
             @ApiResponse(responseCode = "404", description = "OPD tidak ditemukan")
     })
     public WebResponse<Void> delete(

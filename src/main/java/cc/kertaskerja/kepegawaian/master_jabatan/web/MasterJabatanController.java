@@ -29,7 +29,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -129,7 +128,7 @@ public class MasterJabatanController {
     @PutMapping("/{id}")
     @Operation(summary = "Perbarui jabatan", description = "Memperbarui data master jabatan")
     @ApiResponse(responseCode = "200", description = "Data berhasil diperbarui")
-    @ApiResponse(responseCode = "404", description = "Data tidak ditemukan", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Data tidak ditemukan")
     public WebResponse<MasterJabatanResponse> update(
             @Parameter(description = "ID master jabatan", example = "1") @PathVariable Long id,
 
@@ -145,7 +144,7 @@ public class MasterJabatanController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Hapus jabatan", description = "Menghapus data master jabatan")
     @ApiResponse(responseCode = "200", description = "Data berhasil dihapus")
-    @ApiResponse(responseCode = "404", description = "Data tidak ditemukan", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Data tidak ditemukan")
     public WebResponse<Void> delete(
             @Parameter(description = "ID master jabatan", example = "1") @PathVariable Long id) {
         String namaJabatan = masterJabatanService.delete(id);
@@ -155,7 +154,7 @@ public class MasterJabatanController {
     }
 
     @GetMapping("/options")
-    @Operation(summary = "Daftar Master Jabatan untuk dropdown", description = "Simplifikasi Data Master Jabatan untuk dropdown", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Daftar Master Jabatan untuk dropdown", description = "Simplifikasi Data Master Jabatan untuk dropdown")
     public WebResponse<List<OptionResponse>> dropdownAll(
             @RequestParam(required = false) Long opdId) {
         List<OptionResponse> responses = masterJabatanService.findAllByOpdId(opdId)

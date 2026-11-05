@@ -44,10 +44,6 @@ public class JabatanPegawaiController {
                     description = "request body tidak invalid"
             ),
             @ApiResponse(
-                    responseCode = "401",
-                    description = "invalid auth"
-            ),
-            @ApiResponse(
                     responseCode = "404",
                     description = "Pegawai / opd / master jabatan tidak ditemukan"
             )
@@ -79,10 +75,6 @@ public class JabatanPegawaiController {
             @ApiResponse(
                     responseCode = "400",
                     description = "request body tidak invalid"
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "invalid auth"
             ),
             @ApiResponse(
                     responseCode = "404",
