@@ -5,8 +5,9 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface MasterJabatanRepository extends CrudRepository<MasterJabatan, Long> {
+public interface MasterJabatanRepository extends CrudRepository<MasterJabatan, Long>, MasterJabatanRepositoryCustom {
     List<MasterJabatan> findAll();
+
     List<MasterJabatan> findAllByOpdIdAndStatusJabatanOrderByNamaJabatan(Long opdId, MasterJabatanStatus jabatanStatus);
 
     boolean existsByOpdIdAndKodeJabatan(Long opdId, String kodeJabatan);

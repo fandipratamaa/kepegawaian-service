@@ -1,9 +1,27 @@
 package cc.kertaskerja.kepegawaian.pegawai.web;
 
+import java.util.List;
+
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import cc.kertaskerja.kepegawaian.common.web.PageResponse;
+import cc.kertaskerja.kepegawaian.common.web.WebResponse;
 import cc.kertaskerja.kepegawaian.integration.simpeg.web.SimpegSyncRequest;
 import cc.kertaskerja.kepegawaian.pegawai.domain.MigrationSummary;
 import cc.kertaskerja.kepegawaian.pegawai.domain.PegawaiService;
-import cc.kertaskerja.kepegawaian.common.web.WebResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -14,10 +32,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/pegawai")
@@ -31,9 +45,10 @@ public class PegawaiController {
     }
 
     @GetMapping
-    @Operation(summary = "Daftar Pegawai", description = "Mengambil seluruh data pegawai", security = @SecurityRequirement(name = "sessionId"))
+    @Operation(summary = "Daftar Pegawai By Filter", description = "Mengambil seluruh data pegawai by opd id atau nama role", security = @SecurityRequirement(name = "sessionId"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Daftar Pegawai berhasil diambil", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PegawaiResponse.class)))),
+            @ApiResponse(responseCode = "400", description = "Bad Request, filter tidak valid"),
             @ApiResponse(responseCode = "401", description = "Token tidak valid"),
     })
     public WebResponse<List<PegawaiResponse>> findAll(
@@ -45,6 +60,22 @@ public class PegawaiController {
                 .toList();
 
         return WebResponse.success(responses);
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "All Pegawai", description = "Mengambil seluruh data pegawai", security = @SecurityRequirement(name = "sessionId"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Daftar Pegawai berhasil diambil", content = @Content(array = @ArraySchema(schema = @Schema(implementation = PegawaiResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "Token tidak valid"),
+    })
+    public WebResponse<PageResponse<PegawaiResponse>> allPegawais(
+            @ParameterObject @PageableDefault(size = 20, sort = "namaPegawai", direction = Sort.Direction.ASC) Pageable pageable
+
+    ) {
+        Page<PegawaiResponse> responses = pegawaiService.allPegawai(pageable)
+                .map(PegawaiResponse::from);
+
+        return WebResponse.success(PageResponse.from(responses));
     }
 
     @GetMapping("/{id}")

@@ -10,6 +10,9 @@ import cc.kertaskerja.kepegawaian.opd.domain.Opd;
 import cc.kertaskerja.kepegawaian.opd.domain.OpdNotFoundException;
 import cc.kertaskerja.kepegawaian.opd.domain.OpdRepository;
 import com.github.slugify.Slugify;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +34,15 @@ public class MasterJabatanService {
             MasterJabatanRepository masterJabatanRepository,
             SimpegClient simpegClient,
             OpdRepository opdRepository,
-            MappingOpdRepository mappingOpdRepository
-            ) {
+            MappingOpdRepository mappingOpdRepository) {
         this.masterJabatanRepository = masterJabatanRepository;
         this.simpegClient = simpegClient;
         this.opdRepository = opdRepository;
         this.mappingOpdRepository = mappingOpdRepository;
+    }
+
+    public Page<MasterJabatan> allJabatan(Pageable pageable) {
+        return masterJabatanRepository.findAll(pageable);
     }
 
     public List<MasterJabatanJenjang> listJenjangJabatan() {
@@ -52,7 +58,8 @@ public class MasterJabatanService {
     }
 
     public List<MasterJabatan> findAllByOpdId(Long opdId) {
-        return masterJabatanRepository.findAllByOpdIdAndStatusJabatanOrderByNamaJabatan(opdId, MasterJabatanStatus.AKTIF);
+        return masterJabatanRepository.findAllByOpdIdAndStatusJabatanOrderByNamaJabatan(opdId,
+                MasterJabatanStatus.AKTIF);
     }
 
     public MasterJabatan findMasterJabatanById(Long id) {
@@ -73,8 +80,7 @@ public class MasterJabatanService {
                 kodeJabatan,
                 masterJabatan.namaJabatan(),
                 masterJabatan.jenjangJabatan(),
-                MasterJabatanStatus.AKTIF
-        ));
+                MasterJabatanStatus.AKTIF));
     }
 
     @Transactional
@@ -94,9 +100,7 @@ public class MasterJabatanService {
                         updatedMasterJabatan.opdId(),
                         updatedMasterJabatan.namaJabatan(),
                         updatedMasterJabatan.jenjangJabatan(),
-                        kodeJabatan
-                )
-        );
+                        kodeJabatan));
     }
 
     @Transactional
@@ -114,9 +118,7 @@ public class MasterJabatanService {
         // ambil opd dulu
         // Cari OPD sekali saja
         Opd opd = opdRepository.findById(opdId)
-                .orElseThrow(() ->
-                        new OpdNotFoundException(opdId)
-                );
+                .orElseThrow(() -> new OpdNotFoundException(opdId));
         // cari kode opd simpeg dulu
         String sumberMapping = SumberMapping.SIMPEG.name();
 
@@ -126,33 +128,29 @@ public class MasterJabatanService {
         Optional<MappingOpd> mappingOpd = mappingOpdRepository
                 .findBySumberAndKodeMaster(
                         sumberMapping,
-                        opd.kodeOpd()
-                );
+                        opd.kodeOpd());
 
         if (mappingOpd.isEmpty()) {
             return;
         }
-       // ambil dari simpeg
-       // pakai kode opd simpeg untuk sync
-       List<SimpegJabatanResponse> responses =
-               simpegClient.findJabatanByKodeOpd(mappingOpd.get().kodeSumber());
+        // ambil dari simpeg
+        // pakai kode opd simpeg untuk sync
+        List<SimpegJabatanResponse> responses = simpegClient.findJabatanByKodeOpd(mappingOpd.get().kodeSumber());
 
-       SimpegJabatanMapper mapper =
-               new SimpegJabatanMapper();
+        SimpegJabatanMapper mapper = new SimpegJabatanMapper();
 
-       // unique master jabatan
-       List<MasterJabatan> masterJabatans = responses.stream()
-               .map(response -> mapper.toDomain(response, opdId))
-               .collect(Collectors.toMap(
-                       MasterJabatan::kodeJabatan,
-                       Function.identity(),
-                       (existing, duplicate) -> existing
-               ))
-               .values()
-               .stream()
-               .toList();
+        // unique master jabatan
+        List<MasterJabatan> masterJabatans = responses.stream()
+                .map(response -> mapper.toDomain(response, opdId))
+                .collect(Collectors.toMap(
+                        MasterJabatan::kodeJabatan,
+                        Function.identity(),
+                        (existing, duplicate) -> existing))
+                .values()
+                .stream()
+                .toList();
 
-       masterJabatanRepository.saveAll(masterJabatans);
+        masterJabatanRepository.saveAll(masterJabatans);
     }
 
     private String createKodeJabatan(MasterJabatan jabatan) {

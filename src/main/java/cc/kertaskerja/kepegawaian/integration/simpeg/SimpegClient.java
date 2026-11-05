@@ -1,22 +1,24 @@
 package cc.kertaskerja.kepegawaian.integration.simpeg;
 
-import cc.kertaskerja.kepegawaian.integration.simpeg.dto.BaseSimpegResponse;
-import cc.kertaskerja.kepegawaian.integration.simpeg.dto.SimpegJabatanResponse;
-import cc.kertaskerja.kepegawaian.integration.simpeg.dto.SimpegOpdResponse;
-import cc.kertaskerja.kepegawaian.integration.simpeg.dto.SimpegPegawaiResponse;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.util.List;
+import cc.kertaskerja.kepegawaian.integration.simpeg.dto.BaseSimpegResponse;
+import cc.kertaskerja.kepegawaian.integration.simpeg.dto.SimpegJabatanResponse;
+import cc.kertaskerja.kepegawaian.integration.simpeg.dto.SimpegOpdResponse;
+import cc.kertaskerja.kepegawaian.integration.simpeg.dto.SimpegPegawaiResponse;
 
 @Component
+@ConditionalOnProperty(prefix = "integration.simpeg", name = "base-url")
 public class SimpegClient {
 
-    private static final Logger log =
-            LoggerFactory.getLogger(SimpegClient.class);
+    private static final Logger log = LoggerFactory.getLogger(SimpegClient.class);
 
     private final RestClient restClient;
 
@@ -32,7 +34,8 @@ public class SimpegClient {
                 .get()
                 .uri("/master_opd/{active}", activeCode)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         return response != null && response.data() != null
                 ? response.data()
@@ -45,7 +48,8 @@ public class SimpegClient {
                 .get()
                 .uri("/master_jabatan/{kodeOpd}", kodeOpd)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         return response != null && response.data() != null
                 ? response.data()
@@ -58,7 +62,8 @@ public class SimpegClient {
                 .get()
                 .uri("/list_pegawai/{kodeOpd}", kodeOpd)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         return response != null && response.data() != null
                 ? response.data()

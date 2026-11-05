@@ -1,5 +1,14 @@
 package cc.kertaskerja.kepegawaian.opd.domain;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import cc.kertaskerja.kepegawaian.config.KertaskerjaProperties;
 import cc.kertaskerja.kepegawaian.integration.simpeg.SimpegClient;
 import cc.kertaskerja.kepegawaian.integration.simpeg.dto.SimpegOpdResponse;
@@ -7,12 +16,6 @@ import cc.kertaskerja.kepegawaian.integration.simpeg.mapper.SimpegOpdMapper;
 import cc.kertaskerja.kepegawaian.mapping_opd.domain.MappingOpd;
 import cc.kertaskerja.kepegawaian.mapping_opd.domain.MappingOpdRepository;
 import cc.kertaskerja.kepegawaian.mapping_opd.domain.SumberMapping;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,12 +37,15 @@ public class OpdService {
         this.mappingOpdRepository = mappingOpdRepository;
     }
 
+    public Page<Opd> allOpd(Pageable pageable) {
+        return opdRepository.findAll(pageable);
+    }
+
     public List<Opd> findAllOpdAktifInLembaga() {
         return opdRepository
                 .findAllByKodeLembagaAndStatusOpdOrderByNamaOpdAsc(
                         kertaskerjaProperties.kodeLembaga(),
-                        OpdStatus.AKTIF
-                );
+                        OpdStatus.AKTIF);
     }
 
     public void findOpdByKodeOpd(String kodeOpd) {
@@ -69,8 +75,7 @@ public class OpdService {
                 kertaskerjaProperties.kodeLembaga(),
                 kodeOpd,
                 newOpd.namaOpd(),
-                newOpd.singkatanOpd()
-        ));
+                newOpd.singkatanOpd()));
     }
 
     @Transactional
@@ -87,8 +92,7 @@ public class OpdService {
                 existingOpd.update(
                         updatedOpd.kodeOpd(),
                         updatedOpd.namaOpd(),
-                        updatedOpd.singkatanOpd()
-                ));
+                        updatedOpd.singkatanOpd()));
     }
 
     @Transactional
@@ -103,36 +107,24 @@ public class OpdService {
 
         String sumberMapping = SumberMapping.SIMPEG.name();
 
-        List<MappingOpd> mappingOpds =
-                mappingOpdRepository.findBySumber(sumberMapping);
+        List<MappingOpd> mappingOpds = mappingOpdRepository.findBySumber(sumberMapping);
 
-        Map<String, String> mappingByKodeSumber =
-                mappingOpds.stream()
-                        .collect(Collectors.toMap(
-                                MappingOpd::kodeSumber,
-                                MappingOpd::kodeMaster
-                        ));
+        Map<String, String> mappingByKodeSumber = mappingOpds.stream()
+                .collect(Collectors.toMap(
+                        MappingOpd::kodeSumber,
+                        MappingOpd::kodeMaster));
 
-        List<SimpegOpdResponse> responses =
-                simpegClient.findAllOpd("1");
+        List<SimpegOpdResponse> responses = simpegClient.findAllOpd("1");
 
-        SimpegOpdMapper mapper =
-                new SimpegOpdMapper(kertaskerjaProperties);
+        SimpegOpdMapper mapper = new SimpegOpdMapper(kertaskerjaProperties);
 
         List<Opd> opds = responses.stream()
-                .filter(response ->
-                        mappingByKodeSumber.containsKey(
-                                response.opdKode()
-                        )
-                )
-                .map(response ->
-                        mapper.toDomain(
-                                response,
-                                mappingByKodeSumber.get(
-                                        response.opdKode()
-                                )
-                        )
-                )
+                .filter(response -> mappingByKodeSumber.containsKey(
+                        response.opdKode()))
+                .map(response -> mapper.toDomain(
+                        response,
+                        mappingByKodeSumber.get(
+                                response.opdKode())))
                 .toList();
 
         opdRepository.saveAll(opds);
